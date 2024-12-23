@@ -10,6 +10,8 @@ export async function createTables() {
             email VARCHAR(150) UNIQUE NOT NULL,
             password VARCHAR(255) NOT NULL,
             role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('admin', 'employee', 'user')),
+            refresh_token text,
+            refresh_token_expires_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );

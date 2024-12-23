@@ -36,9 +36,7 @@ const buildPath = path.join(__dirname, 'dist');
 app.use(express.static(buildPath));
 
 // Handle SPA routing
-app.get('*', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-});
+
 
 // Middlewares
 app.use(express.json());
@@ -75,7 +73,9 @@ app.use("/api/v1/blog",blogRoutes);
 // app.use("/api/v1/address",addressRoutes);
 // app.use("/api/v1/kyc",kycRoutes);
 // app.use("/api/v1/uccprofile",uccRoutes);
-
+app.get('*', (req, res) => {
+  res.sendFile(path.join(buildPath, 'index.html'));
+});
 // Error handling middleware
 app.use(errorHandling);
 // Global error handling middleware
