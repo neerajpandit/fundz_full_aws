@@ -32,9 +32,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Serve static files from the React build
-const buildPath = path.join(__dirname, 'dist');
-app.use(express.static(buildPath));
+// const buildPath = path.join(__dirname, 'dist');
+// app.use(express.static(buildPath));
 
+app.use(express.static(path.join(__dirname, 'dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(buildPath, 'index.html'));
+// });
 // Handle SPA routing
 
 
@@ -73,9 +81,8 @@ app.use("/api/v1/blog",blogRoutes);
 // app.use("/api/v1/address",addressRoutes);
 // app.use("/api/v1/kyc",kycRoutes);
 // app.use("/api/v1/uccprofile",uccRoutes);
-app.get('*', (req, res) => {
-  res.sendFile(path.join(buildPath, 'index.html'));
-});
+
+
 // Error handling middleware
 app.use(errorHandling);
 // Global error handling middleware
