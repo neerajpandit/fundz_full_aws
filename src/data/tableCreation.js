@@ -35,9 +35,20 @@ export async function createTables() {
 
     `;
 
+    const backlinksQuery=`
+        CREATE TABLE IF NOT EXISTS backlinks (
+            id SERIAL PRIMARY KEY,
+            blog_id INT NOT NULL REFERENCES blogs(id) ON DELETE CASCADE,
+            url VARCHAR(255) NOT NULL,
+            anchor_text VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    `;
+
     try {
         await pool.query(userDetailsQuery); // Create userprofiles first
         await pool.query(blogQuery);
+        await pool.query(backlinksQuery);
         console.log('Tables created successfully');
     } catch (error) {
         console.error('Error creating tables:', error.stack);

@@ -3,15 +3,16 @@ import pool from "../config/db.js";
 export const createBlogService = async (
   title,
   content,
-  author_id,
-  tags,
+  author_id=1,
+  tagsArray,
   category,
+  status,
   featured_image
 ) => {
   try {
     const result = await pool.query(
-      "INSERT INTO blogs (title,content,author_id,tags,category,featured_image) VALUES ($1,$2,$3,$4,$5,$6) RETURNING * ",
-      [title, content, author_id, JSON.parse(tags), category, featured_image]
+      "INSERT INTO blogs (title,content,author_id,tags,category,status,featured_image) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING * ",
+      [title, content, author_id, tagsArray, category,status, featured_image]
     );
     console.log(result.rows[0]);
     

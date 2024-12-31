@@ -24,7 +24,6 @@
 //     }),
 //   });
 
-
 import multer from 'multer';
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
@@ -40,11 +39,17 @@ const s3 = new S3Client({
   },
 });
 
-// Set up multer to store files in memory before uploading to S3
-export const upload = multer({ storage: multer.memoryStorage() });
+// Set up multer to store files in memory
+export const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
+}).single('file'); // Adjust field name to match the form or request
+
+
 
 // Function to upload a file to S3
 export const uploadFileToS3 = async (file) => {
+
   const uniqueKey = `uploads/${Date.now()}_${file.originalname}`;
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,

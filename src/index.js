@@ -37,7 +37,7 @@ const __dirname = path.dirname(__filename);
 
 app.use(express.static(path.join(__dirname, 'dist')));
 
-app.get('*', (req, res) => {
+app.get('/f', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 // app.get('*', (req, res) => {
@@ -53,7 +53,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: '*',
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST','PUT','DELETE'],
     credentials: true, // Allow cookies
   })
 );
