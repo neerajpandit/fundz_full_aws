@@ -45,14 +45,43 @@ export async function createTables() {
     );
     `;
 
+    const fundHouseQuery=`
+        CREATE TABLE IF NOT EXISTS FundHouse (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        logo_url VARCHAR(255) NOT NULL,  -- Path or URL of the image
+        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    );
+
+    `;
+
+    const schemeQuery=`
+        CREATE TABLE IF NOT EXISTS Scheme (
+            id SERIAL PRIMARY KEY,
+            scheme_code VARCHAR(100) UNIQUE NOT NULL,
+            scheme_name VARCHAR(255) NOT NULL, 
+            about TEXT, -- About the scheme
+            status VARCHAR(50) NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+            fundhouse_id INT REFERENCES FundHouse(id) ON DELETE CASCADE 
+        );
+
+    `;
+
     try {
         await pool.query(userDetailsQuery); // Create userprofiles first
         await pool.query(blogQuery);
         await pool.query(backlinksQuery);
+        await pool.query(fundHouseQuery);
+        await pool.query(schemeQuery)
+
         console.log('Tables created successfully');
     } catch (error) {
         console.error('Error creating tables:', error.stack);
     }
 }
+
 
 

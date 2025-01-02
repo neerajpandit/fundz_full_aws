@@ -107,7 +107,7 @@ export const loginUser = asyncHandler(async (req, res, next) => {
 
 export const logoutUser = asyncHandler(async (req, res, next) => {
   try {
-     console.log("logout", req.userId);
+    console.log("logout", req.userId);
 
     // Perform any required actions for logout, such as updating the user session in the database
     const user = await logoutUserService(req.userId);
@@ -150,7 +150,7 @@ export const getUserById = asyncHandler(async (req, res, next) => {
   try {
     const user = await getUserByIdService(req.params.id);
     if (!user) return handleResponse(res, 404, "User not found");
-    
+
     handleResponse(res, 200, "User fetched successfully", user);
   } catch (err) {
     next(err);
