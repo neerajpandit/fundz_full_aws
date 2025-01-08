@@ -60,7 +60,8 @@ export async function createTables() {
         CREATE TABLE IF NOT EXISTS Scheme (
             id SERIAL PRIMARY KEY,
             scheme_code VARCHAR(100) UNIQUE NOT NULL,
-            scheme_name VARCHAR(255) NOT NULL, 
+            scheme_name VARCHAR(255) NOT NULL,
+            aum NUMERIC(15, 2) NOT NULL, 
             about TEXT, -- About the scheme
             status VARCHAR(50) NOT NULL,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,

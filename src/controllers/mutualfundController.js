@@ -10,7 +10,7 @@ import {
 } from "../models/mfModel.js";
 
 export const createFundScheme = asyncHandler(async (req, res, next) => {
-  const { scheme_code, about, status, fundhouse_id } = req.body;
+  const { scheme_code,aum, about, status, fundhouse_id } = req.body;
   // console.log("SCHEME",req.body);
 
   // const schemeCode = "127042"
@@ -34,6 +34,7 @@ export const createFundScheme = asyncHandler(async (req, res, next) => {
     const mf = await createMutualSchemeService(
       scheme_code,
       scheme_name,
+      aum,
       about,
       status,
       fundhouse_id
@@ -238,14 +239,13 @@ export const getMutualFundData = asyncHandler(async (req, res, next) => {
 });
 
 export const getAllMutualFund = asyncHandler(async (req, res, next) => {
+
   const query = `
             SELECT 
                 s.id AS scheme_id,
                 s.scheme_code,
                 s.scheme_name,
-                s.about,
-                s.status,
-                f.id AS fundhouse_id,
+                s.aum,
                 f.logo_url AS fundhouse_logo
             FROM 
                 Scheme s
@@ -260,3 +260,13 @@ export const getAllMutualFund = asyncHandler(async (req, res, next) => {
   }
   handleResponse(res, 200, "FUnd Found Successfully", data.rows);
 });
+
+export const getFundHouse = asyncHandler(async(req,res,next)=>{
+  const query = `SELECT * FROM fundhouse`;
+
+  const data = await pool.query(query);
+  if (!data) {
+    throw new ApiError("Fund Not Found");
+  }
+  handleResponse(res, 200, "FUnd Found Successfully", data.rows);
+})
