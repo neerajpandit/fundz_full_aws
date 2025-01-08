@@ -2,6 +2,7 @@ import pool from "../config/db.js";
 import { ApiError } from "../middlewares/ApiError.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 import { accessToken, refreshToken } from "../middlewares/authMiddleware.js";
+import { uploadFileToS3 } from "../middlewares/multeraws.js";
 import { handleResponse } from "../middlewares/responseHandler.js";
 import {
   createUserService,
@@ -177,3 +178,21 @@ export const deleteUser = async (req, res, next) => {
     next(err);
   }
 };
+
+
+export const createImage = asyncHandler(async (req, res, next) => {
+  try {
+    const fileKey = await uploadFileToS3(req.file);
+    console.log("File Key",fileKey);
+    
+    const imgpath = `https://fundzz.s3.ap-south-1.amazonaws.com/${fileKey}`;
+
+
+    if (!fileKey) {
+      throw new ApiError("Find Error in upload img");
+    }
+    handleResponse(res, 201, "Img upload Successfully", imgpath);
+  } catch (error) {
+    next(error);
+  }
+});
