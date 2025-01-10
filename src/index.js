@@ -43,7 +43,7 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      imgSrc: ["'self'", "https://img.icons8.com"],
+      imgSrc: ["'self'","*", "https://img.icons8.com"],
     },
   })
 );
