@@ -69,7 +69,8 @@ export const createFundHouse = asyncHandler(async (req, res, next) => {
 
 export const getMutualFundData = asyncHandler(async (req, res, next) => {
   const { schemeCode } = req.params;
-  console.log("Fetching data for scheme code:", schemeCode);
+  // console.log("Fetching data for scheme code:", schemeCode);
+  
   const query = `
     SELECT 
         s.scheme_name,
@@ -152,23 +153,23 @@ export const getMutualFundData = asyncHandler(async (req, res, next) => {
     const threeYearAgoFormatted = findPreviousDateWithNAV(threeYearsAgo);
     const fiveYearAgoFormatted = findPreviousDateWithNAV(fiveYearAgo);
 
-    console.log("Dates used:");
-    console.log("One day ago:", oneDayAgoFormatted);
-    console.log("Two day ago:", twoDayAgoFormatted);
-    console.log("One month ago:", oneMonthAgoFormatted);
-    console.log("Three months ago:", threeMonthsAgoFormatted);
-    console.log("Six months ago:", sixMonthsAgoFormatted);
-    console.log("One Year ago:", oneYearAgoFormatted);
-    console.log("THREE Year ago:", threeYearAgoFormatted);
-    console.log("Five Year ago:", fiveYearAgoFormatted);
+    // console.log("Dates used:");
+    // console.log("One day ago:", oneDayAgoFormatted);
+    // console.log("Two day ago:", twoDayAgoFormatted);
+    // console.log("One month ago:", oneMonthAgoFormatted);
+    // console.log("Three months ago:", threeMonthsAgoFormatted);
+    // console.log("Six months ago:", sixMonthsAgoFormatted);
+    // console.log("One Year ago:", oneYearAgoFormatted);
+    // console.log("THREE Year ago:", threeYearAgoFormatted);
+    // console.log("Five Year ago:", fiveYearAgoFormatted);
 
     //const currentNAV = navByDate[oneDayAgoFormatted]; // Latest NAV
 
     const inceptionNAV = parseFloat(navData[navData.length - 1].nav); // Earliest NAV (from the first available date)
     const currentNAV = parseFloat(navData[0].nav); // Latest NAV (from the most recent available date)
 
-    console.log("Inception NAV:", inceptionNAV);
-    console.log("Current NAV:", currentNAV);
+    // console.log("Inception NAV:", inceptionNAV);
+    // console.log("Current NAV:", currentNAV);
 
     const calculateReturn = (startDate) => {
       const previousNAV = navByDate[startDate];

@@ -44,14 +44,14 @@ app.use(
     directives: {
       defaultSrc: ["'self'"],
       imgSrc: ["'self'","*","https://fundzz.com","http://fundzz.com", "https://img.icons8.com"],
-      connectSrc: ["'self'", "https://fundzz.com"],
+      connectSrc: ["'self'","*","https://newsapi.org", "https://fundzz.com"],
     },
   })
 );
 app.use(
   rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per window
+    windowMs: 1500 * 60 * 1000, // 15 minutes
+    max: 1000000, // Limit each IP to 100 requests per window
     message: "Too many requests from this IP, please try again later.",
   })
 );
