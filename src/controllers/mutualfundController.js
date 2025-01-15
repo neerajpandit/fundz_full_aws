@@ -80,13 +80,15 @@ export const getMutualFundData = asyncHandler(async (req, res, next) => {
     JOIN 
         FundHouse f
     ON 
-        s.fundhouse_id = f.id;
+        s.fundhouse_id = f.id
+    WHERE 
+        s.scheme_code = $1;
 `;
 
   try {
     // Query the database for the logo
     // const logoQuery = 'SELECT mflogo, about FROM mutualfunds WHERE id = $1';
-    const logoResult = await pool.query(query);
+    const logoResult = await pool.query(query, [schemeCode]);
     // const logoResult1 = await pool.query(logoQuery, [48]);
     const logo = logoResult.rows.length > 0 ? logoResult.rows[0] : null;
 

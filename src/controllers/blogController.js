@@ -226,3 +226,89 @@ export const likeBlogById = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
+
+
+export const deleteBacklink1 = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Ensure the backlink ID is provided and valid
+    if (!id || isNaN(Number(id))) {
+      return res.status(400).json({ error: 'Invalid backlink ID.' });
+    }
+
+    // Query to delete the backlink
+    const query = 'DELETE FROM backlinks WHERE id = $1 RETURNING *';
+    const result = await pool.query(query, [id]);
+
+    // Check if the backlink was found and deleted
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Backlink not found.' });
+    }
+
+    res.status(200).json({
+      message: 'Backlink deleted successfully.',
+      deletedBacklink: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error deleting backlink:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+export const deleteBacklink = asyncHandler(async (req, res, next) => {
+  const { blogId, backlinkId } = req.params;
+
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // Get the blog and its content
+    const blogQuery = await client.query("SELECT content FROM blogs WHERE id = $1", [blogId]);
+    if (blogQuery.rowCount === 0) {
+      throw new Error("Blog not found");
+    }
+
+    let content = blogQuery.rows[0].content;
+
+    // Get the backlink details to delete
+    const backlinkQuery = await client.query("SELECT url, anchor_text FROM backlinks WHERE id = $1 AND blog_id = $2", [backlinkId, blogId]);
+    if (backlinkQuery.rowCount === 0) {
+      throw new Error("Backlink not found");
+    }
+
+    const { url, anchor_text } = backlinkQuery.rows[0];
+
+    // Remove the backlink from the blog content
+    const anchorTagRegex = new RegExp(`<a href="${url}".*?>${anchor_text}</a>`, "g");
+    content = content.replace(anchorTagRegex, anchor_text);
+
+    // Delete the backlink from the backlinks table
+    await client.query("DELETE FROM backlinks WHERE id = $1", [backlinkId]);
+
+    // Update the blog content
+    await client.query(
+      "UPDATE blogs SET content = $1, updated_at = NOW() WHERE id = $2",
+      [content, blogId]
+    );
+
+    await client.query("COMMIT");
+
+    res.status(200).json({
+      success: true,
+      message: "Backlink deleted and blog updated successfully",
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error deleting backlink:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete backlink",
+      error: error.message,
+    });
+  } finally {
+    client.release();
+  }
+});
