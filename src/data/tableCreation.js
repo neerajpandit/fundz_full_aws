@@ -21,6 +21,8 @@ export async function createTables() {
         CREATE TABLE IF NOT EXISTS blogs (
             id SERIAL PRIMARY KEY,
             title VARCHAR(255) NOT NULL,
+            slug VARCHAR(255) UNIQUE,
+            meta_description TEXT,
             content TEXT NOT NULL,
             author_id INT NOT NULL REFERENCES users(id),
             tags TEXT[],
@@ -33,6 +35,14 @@ export async function createTables() {
             likes INT DEFAULT 0
         );
 
+    `;
+
+    const visiterQuery =`
+        CREATE TABLE IF NOT EXISTS UniqueVisitors (
+            id SERIAL PRIMARY KEY,
+            visitor_id VARCHAR(255) NOT NULL UNIQUE,
+            visited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
     `;
 
     const backlinksQuery=`
@@ -76,7 +86,8 @@ export async function createTables() {
         await pool.query(blogQuery);
         await pool.query(backlinksQuery);
         await pool.query(fundHouseQuery);
-        await pool.query(schemeQuery)
+        await pool.query(schemeQuery);
+        await pool.query(visiterQuery);
 
         console.log('Tables created successfully');
     } catch (error) {

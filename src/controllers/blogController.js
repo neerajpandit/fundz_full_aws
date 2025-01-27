@@ -7,6 +7,7 @@ import {
   createBlogService,
   getAllBlogService,
   getBlogByIdService,
+  getBlogBySlugService,
   likeBlogService,
   updateBlogService,
 } from "../models/blogModel.js";
@@ -18,21 +19,38 @@ const s3 = new AWS.S3({
   region: process.env.AWS_REGION,
 });
 
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-') // Replace special characters with hyphen
+    .replace(/^-+|-+$/g, '');    // Trim hyphens from start or end
+}
+
 export const createBlog = asyncHandler(async (req, res, next) => {
-  const { title, content, tags, category, status } = req.body;
+  const { title, content,meta_description, tags, category, status } = req.body;
+  const slug = generateSlug(title);
   const author_id = req.userId;
 
   console.log("Body", req.body);
 
-  const fileKey = await uploadFileToS3(req.file);
-  // console.log("key",fileKey);
-  // }
-  const featured_image = req.file ? fileKey : null;
+
   try {
+    const result = await pool.query('SELECT COUNT(*) FROM blogs');
+    const blogs = parseInt(result.rows[0].count);
+    if (blogs >= 10) {
+      throw new ApiError(200, "Blog Created Successfully")
+    }
+    const fileKey = await uploadFileToS3(req.file);
+    // console.log("key",fileKey);
+    // }
+    const featured_image = req.file ? fileKey : null;
+
     const tagsArray = tags.split(",").map((tag) => tag.trim());
     const blog = await createBlogService(
       title,
+      slug,
       content,
+      meta_description,
       author_id,
       tagsArray,
       category,
@@ -106,6 +124,22 @@ export const getBlogById = asyncHandler(async (req, res, next) => {
   } catch (error) {
     console.error("Error fetching blog:", error);
     res.status(500).json({ message: "Failed to fetch blog" });
+  }
+});
+
+export const getBlogBySlug = asyncHandler(async (req, res, next) => {
+  const { slug } = req.params;
+
+  try {
+    const blog = await getBlogBySlugService(slug);
+
+    if (!blog) {
+      throw new ApiError(404, "Blog not found");
+    }
+
+    handleResponse(res, 200, "Blog fetched successfully", blog);
+  } catch (error) {
+    next(error);
   }
 });
 

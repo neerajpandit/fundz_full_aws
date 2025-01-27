@@ -9,12 +9,14 @@ import morgan from "morgan";
 import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from 'fs';
 
 import userRoutes from "./routes/userRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import mfRoutes from "./routes/mfRoutes.js";
 import errorHandling from "./middlewares/errorHandler.js";
 import { createTables } from "./data/tableCreation.js";
+import { trackVisitor } from "./middlewares/trackVisitor.js";
 
 dotenv.config();
 
@@ -31,6 +33,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("combined"));
+
+const logDirectory = path.join(__dirname, 'logs');
+if (!fs.existsSync(logDirectory)) fs.mkdirSync(logDirectory);
+const accessLogStream = fs.createWriteStream(path.join(logDirectory, 'access.log'), { flags: 'a' });
+if (process.env.NODE_ENV === 'production') {
+    // In production: Use "combined" format and log to a file
+    app.use(morgan('combined', { stream: accessLogStream }));
+} else {
+    // In development: Use "dev" format (concise, colored logs)
+    app.use(morgan('dev'));
+}
 app.use(
   cors({
     origin: "*",
@@ -38,6 +51,7 @@ app.use(
     credentials: true, // Allow cookies
   })
 );
+app.use(trackVisitor);
 app.use(helmet());
 app.use(
   helmet.contentSecurityPolicy({
@@ -50,9 +64,9 @@ app.use(
 );
 app.use(
   rateLimit({
-    windowMs: 1500 * 60 * 1000, // 15 minutes
+    windowMs: 15 * 60 * 1000, // 15 minutes
     max: 1000000, // Limit each IP to 100 requests per window
-    message: "Too many requests from this IP, please try again later.",
+    message: "...",
   })
 );
 

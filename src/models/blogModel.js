@@ -2,7 +2,9 @@ import pool from "../config/db.js";
 
 export const createBlogService = async (
   title,
+  slug,
   content,
+  meta_description,
   author_id = 1,
   tagsArray,
   category,
@@ -11,8 +13,8 @@ export const createBlogService = async (
 ) => {
   try {
     const result = await pool.query(
-      "INSERT INTO blogs (title,content,author_id,tags,category,status,featured_image) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING * ",
-      [title, content, author_id, tagsArray, category, status, featured_image]
+      "INSERT INTO blogs (title,slug,content,meta_description,author_id,tags,category,status,featured_image) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING * ",
+      [title,slug, content,meta_description, author_id, tagsArray, category, status, featured_image]
     );
     console.log(result.rows[0]);
 
@@ -36,6 +38,16 @@ export const getBlogByIdService = async (id) => {
   try {
     const result = await pool.query("SELECT * FROM blogs WHERE id=$1", [id]);
     await incrementBlogViews(id);
+    return result.rows[0];
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getBlogBySlugService = async (slug) => {
+  try {
+    const result = await pool.query("SELECT * FROM blogs WHERE slug=$1", [slug]);
+    await incrementBlogViews(result.rows[0].id);
     return result.rows[0];
   } catch (error) {
     next(error);
