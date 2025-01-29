@@ -62,13 +62,13 @@ app.use(trackVisitor);
 //     },
 //   })
 // );
-// app.use(
-//   rateLimit({
-//     windowMs: 5 * 60 * 1000, 
-//     max: 1000,
-//     message: "",
-//   })
-// );
+app.use(
+  rateLimit({
+    windowMs: 1 * 60 * 1000, 
+    max: 100000000000000,
+    message: "",
+  })
+);
 
 // Routes
 app.use("/api/v1/user", userRoutes);
