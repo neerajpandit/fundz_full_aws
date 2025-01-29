@@ -52,21 +52,21 @@ app.use(
   })
 );
 app.use(trackVisitor);
-app.use(helmet());
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      imgSrc: ["'self'","*","https://fundzz.com","http://fundzz.com", "https://img.icons8.com"],
-      connectSrc: ["'self'","*","https://newsapi.org", "https://fundzz.com"],
-    },
-  })
-);
+// app.use(helmet());
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       defaultSrc: ["'self'"],
+//       imgSrc: ["'self'","*","https://fundzz.com","http://fundzz.com", "https://img.icons8.com"],
+//       connectSrc: ["'self'","*","https://newsapi.org", "https://fundzz.com"],
+//     },
+//   })
+// );
 app.use(
   rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 1000000, // Limit each IP to 100 requests per window
-    message: "...",
+    windowMs: 5 * 60 * 1000, 
+    max: 1000,
+    message: "",
   })
 );
 
