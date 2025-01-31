@@ -10,6 +10,7 @@ import {
   getBlogBySlugService,
   likeBlogService,
   updateBlogService,
+  deleteBlogService,
 } from "../models/blogModel.js";
 
 import AWS from "aws-sdk";
@@ -96,7 +97,7 @@ export const getBlogById = asyncHandler(async (req, res, next) => {
   try {
     // Fetch the blog
     const blogQuery = `
-        SELECT * FROM blogs WHERE id = $1
+        SELECT  title,meta_description,category,tags,content,status,views,likes,featured_image FROM blogs WHERE id = $1
       `;
     const blogResult = await pool.query(blogQuery, [blogId]);
 
@@ -344,5 +345,21 @@ export const deleteBacklink = asyncHandler(async (req, res, next) => {
     });
   } finally {
     client.release();
+  }
+});
+
+export const deleteBlogById = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const blog = await deleteBlogService(id);
+
+    if (!blog) {
+      throw new ApiError(404, "Blog not found");
+    }
+
+    handleResponse(res, 200, "Blog deleted successfully", blog);
+  } catch (error) {
+    next(error);
   }
 });

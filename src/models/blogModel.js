@@ -27,7 +27,7 @@ export const createBlogService = async (
 
 export const getAllBlogService = async () => {
   try {
-    const result = await pool.query("SELECT * FROM blogs");
+    const result = await pool.query("SELECT id, title,meta_description,category,tags,content,status,views,likes,featured_image FROM blogs");
     return result.rows;
   } catch (error) {
     next(error);
@@ -36,7 +36,7 @@ export const getAllBlogService = async () => {
 
 export const getBlogByIdService = async (id) => {
   try {
-    const result = await pool.query("SELECT * FROM blogs WHERE id=$1", [id]);
+    const result = await pool.query("SELECT title FROM blogs WHERE id=$1", [id]);
     await incrementBlogViews(id);
     return result.rows[0];
   } catch (error) {
@@ -123,5 +123,19 @@ export const likeBlogService = async (blogId) => {
     return result.rows[0];
   } catch (error) {
     throw new Error(`Error liking blog: ${error.message}`);
+  }
+};
+
+export const deleteBlogService = async (blogId) => {
+  try {
+    const result = await pool.query("DELETE FROM blogs WHERE id = $1", [blogId]);
+
+    if (result.rowCount === 0) {
+      throw new Error("Blog not found");
+    }
+
+    return "Blog deleted successfully";
+  } catch (error) {
+    throw new Error(`Error deleting blog: ${error.message}`);
   }
 };

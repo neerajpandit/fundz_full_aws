@@ -2,6 +2,7 @@ import express from "express";
 import {
   createBlog,
   deleteBacklink,
+  deleteBlogById,
   getAllBlog,
   getBlogById,
   getBlogBySlug,
@@ -12,10 +13,11 @@ import { upload } from "../middlewares/multeraws.js";
 
 const router = express.Router();
 
-router.post("/",upload, createBlog);
+router.post("/",verifyToken,upload, createBlog);
 router.get("/", getAllBlog);
-router.get("/a/:id", getBlogById);
-router.get('/:slug',getBlogBySlug);
-router.put("/:id",  upload, updateBlogById);
-router.delete('/backlinks/:blogId/:backlinkId', deleteBacklink);
+router.get("/:id", getBlogById);
+router.get('/slug/:slug',getBlogBySlug);
+router.put("/:id",verifyToken,  upload, updateBlogById);
+router.delete('/backlinks/:blogId/:backlinkId',verifyToken, deleteBacklink);
+router.delete('/:id', verifyToken,deleteBlogById);
 export default router;

@@ -10,7 +10,7 @@ import {
 } from "../models/mfModel.js";
 
 export const createFundScheme = asyncHandler(async (req, res, next) => {
-  const { scheme_code,aum, about, status, fundhouse_id } = req.body;
+  const { scheme_code,scheme_type, aum, about, status, fundhouse_id } = req.body;
   // console.log("SCHEME",req.body);
 
   // const schemeCode = "127042"
@@ -34,6 +34,7 @@ export const createFundScheme = asyncHandler(async (req, res, next) => {
     const mf = await createMutualSchemeService(
       scheme_code,
       scheme_name,
+      scheme_type,
       aum,
       about,
       status,
@@ -248,6 +249,7 @@ export const getAllMutualFund = asyncHandler(async (req, res, next) => {
                 s.id AS scheme_id,
                 s.scheme_code,
                 s.scheme_name,
+                s.scheme_type,
                 s.aum,
                 f.logo_url AS fundhouse_logo
             FROM 
@@ -272,4 +274,54 @@ export const getFundHouse = asyncHandler(async(req,res,next)=>{
     throw new ApiError("Fund Not Found");
   }
   handleResponse(res, 200, "FUnd Found Successfully", data.rows);
+})
+
+export const updateFundScheme = asyncHandler(async(req,res,next)=>{
+  const { id } = req.params;
+  const { scheme_code,scheme_name,scheme_type, aum, about, status, fundhouse_id } = req.body;
+  const query = `
+    UPDATE Scheme
+    SET 
+      scheme_name = COALESCE($1, scheme_name),
+      scheme_type = COALESCE($2, scheme_type),
+      aum = COALESCE($3, aum),
+      about = COALESCE($4, about),
+      status = COALESCE($5, status),
+      fundhouse_id = COALESCE($6, fundhouse_id),
+      scheme_code = COALESCE($7, scheme_code),
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id =$8
+    RETURNING *;
+    `;
+
+  const values = [scheme_name,scheme_type, aum, about, status, fundhouse_id,scheme_code,id];
+
+  try {
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      throw new ApiError("Scheme not found");
+    }
+
+    handleResponse(res, 200, "Scheme updated successfully", result.rows[0]);
+  } catch (error) {
+    next(error);
+  }
+})
+
+export const deleteFundScheme = asyncHandler(async(req,res,next)=>{
+  const { id } = req.params;
+  const query = `DELETE FROM Scheme WHERE id = $1 RETURNING *`;
+
+  try {
+    const result = await pool.query(query, [id]);
+
+    if (result.rows.length === 0) {
+      throw new ApiError("Scheme not found");
+    }
+
+    handleResponse(res, 200, "Scheme deleted successfully", result.rows[0]);
+  } catch (error) {
+    next(error);
+  }
 })

@@ -71,6 +71,7 @@ export async function createTables() {
             id SERIAL PRIMARY KEY,
             scheme_code VARCHAR(100) UNIQUE NOT NULL,
             scheme_name VARCHAR(255) NOT NULL,
+            scheme_type VARCHAR(255),
             aum NUMERIC(15, 2) NOT NULL, 
             about TEXT, -- About the scheme
             status VARCHAR(50) NOT NULL,

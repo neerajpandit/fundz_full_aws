@@ -68,7 +68,7 @@ app.use(
     max: 100000000000000,
     message: "",
   })
-);
+); 
 
 // Routes
 app.use("/api/v1/user", userRoutes);
@@ -79,10 +79,24 @@ app.use("/api/v1/mf", mfRoutes);
 const buildPath = path.join(__dirname, "dist");
 app.use(express.static(buildPath));
 
+app.get('/download-logs', (req, res) => {
+  const logFilePath = path.join(__dirname,"logs", 'access.log'); // Path to the log file
+  console.log('Downloading log file:', logFilePath);
+  
+  res.download(logFilePath, 'app.log', (err) => {
+      if (err) {
+          logger.error('Error downloading log file:', err);
+          res.status(500).send('Error downloading log file');
+      }
+  });
+});
+
 // SPA fallback for React routing
 app.get("*", (req, res) => {
   res.sendFile(path.join(buildPath, "index.html"));
 });
+
+
 
 // Error handling middleware
 app.use(errorHandling);
