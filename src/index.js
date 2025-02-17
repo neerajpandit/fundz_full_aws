@@ -64,7 +64,7 @@ app.use(trackVisitor);
 // );
 app.use(
   rateLimit({
-    windowMs: 1 * 60 * 1000, 
+    windowMs: 5 * 60 * 60 * 1000,// 3 hours
     max: 100,
     message: "",
   })
